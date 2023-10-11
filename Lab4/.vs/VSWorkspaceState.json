@@ -2,6 +2,7 @@
   "ExpandedNodes": [
     "",
     "\\Controllers",
+    "\\Models",
     "\\ViewComponents",
     "\\Views",
     "\\Views\\Learner"

@@ -42,13 +42,13 @@ namespace ThucHanh1.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("FirstMidName,LastName,MajorID,EnrollmentDate")] Learner learner)
         {
-            db.Learners.Add(learner);
-            db.SaveChanges();
-            return RedirectToAction(nameof(Index));
-            //if (ModelState.IsValid)
-            //{
 
-            //}
+            if (ModelState.IsValid)
+            {
+                db.Learners.Add(learner);
+                db.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
             //lại dùng 1 trong 2 cách tạo SelectList gửi về View để hiển thị danh sách Majors
             ViewBag.MajorID = new SelectList(db.Majors, "MajorID", "MajorName");
             return View();
@@ -79,41 +79,45 @@ namespace ThucHanh1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,FirstMidName,LastName,MajorID,EnrollmentDate")] Learner learner)
         {
+            learner.LearnerID = id;
             if (id != learner.LearnerID)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+            try
             {
-                try
-                {
-                    db.Update(learner);
-                    await db.SaveChangesAsync();
-
-                }
-                //catch (DbUpdateConcurrencyException)
-                //{
-                //    if (!LearnerExists(learner.LearnerID))
-                //    {
-                //        return NotFound();
-                //    }
-                //    else
-                //    {
-                //        throw;
-                //    }
-                }
-                return RedirectToAction(nameof(Index));
+                db.Update(learner);
+                await db.SaveChangesAsync();
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!LearnerExists(learner.LearnerID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+            //}
 
             // Repopulate the SelectList for Majors in case of validation errors
             ViewBag.MajorID = new SelectList(db.Majors, "MajorID", "MajorName", learner.MajorID);
 
             return View(learner);
         }
+        private bool LearnerExists(int id)
+        {
+            return (db.Learners?.Any(e => e.LearnerID == id)).GetValueOrDefault();
+        }
 
-        // GET: Learner/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+    // GET: Learner/Delete/5
+    public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -140,9 +144,9 @@ namespace ThucHanh1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool LearnerExists(int id)
-        {
-            return db.Learners.Any(e => e.LearnerID == id);
-        }
+        //private bool LearnerExists(int id)
+        //{
+        //    return db.Learners.Any(e => e.LearnerID == id);
+        //}
     }
 }

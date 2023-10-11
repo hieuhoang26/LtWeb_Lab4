@@ -8,7 +8,7 @@
         public string FirstMidName { get; set; }
         public DateTime EnrollmentDate { get; set; }
         public int MajorID { get; set; }
-        public Majors Major { get; set; }
+        public virtual Majors? Major { get; set; }
         public ICollection<Enrollment> Enrollments { get; set; }
     }
 }
